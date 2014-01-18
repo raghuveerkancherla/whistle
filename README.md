@@ -1,4 +1,4 @@
-whistle
+[![Build Status](https://travis-ci.org/raghuveerkancherla/whistle.png?branch=master)](https://travis-ci.org/raghuveerkancherla/whistle) whistle
 =======
 
 Whistle is a framework that helps you write apps where business logic (core functionality) 
