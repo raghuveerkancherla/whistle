@@ -1,5 +1,5 @@
 from .exceptions import InvalidCallable
-import utils
+from . import utils
 
 class Api(object):
     '''
