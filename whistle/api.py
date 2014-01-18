@@ -23,7 +23,7 @@ class Api(object):
                 self._registry[callable_object._meta.name] = callable_object
             else:
                 raise InvalidCallable('%s is not a valid name' %callable_object._meta.name)
-        except AttributeError, e:
+        except AttributeError as e:
                 '''
                 Happens if callable_object does not have _meta or _meta.name properties
                 '''
