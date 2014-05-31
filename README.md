@@ -3,15 +3,17 @@
 
 Whistle is a new way to build web applications. It takes an api driven development approach. 
 
-class BlogResource(BaseResource):
-    pass
+
+    class BlogResource(BaseResource):
+        pass
 
 
-blog_resource = BlogResource()
-blog = blog_resource.get(id=1)
-updated_blog = blog_resource.update(title='new blog title')
-blog_resource.delete(id=1)
+    blog_resource = BlogResource()
+    blog = blog_resource.get(id=1)
+    updated_blog = blog_resource.update(title='new blog title')
+    blog_resource.delete(id=1)
 
+* * *
 
 Whistle has 3 main components.
 1. Resource: Resources define the basic crud functionality by default. You are free to add more functions, but it is recommended that you think carefully before you do. More often than not, it leads to unnecessary pollution of the api.
