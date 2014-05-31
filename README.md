@@ -1,9 +1,19 @@
 [![Build Status](https://travis-ci.org/raghuveerkancherla/whistle.png?branch=master)](https://travis-ci.org/raghuveerkancherla/whistle) whistle
 =======
 
-Whistle is a framework that helps you write apps where business logic (core functionality) 
-is separate from delivery mechanism (http / command line).
+Whistle is a new way to build web applications. It takes an api driven development approach. 
 
-As an added benefit, persistence (saving to DB) is also separated from business logic. 
-Your dependence on an ORM reduces drastically making it possible for you to move from 
-relataional DB to non-reltation DB reasonably easy
+class BlogResource(BaseResource):
+    pass
+
+
+blog_resource = BlogResource()
+blog = blog_resource.get(id=1)
+updated_blog = blog_resource.update(title='new blog title')
+blog_resource.delete(id=1)
+
+
+Whistle has 3 main components.
+1. Resource: Resources define the basic crud functionality by default. You are free to add more functions, but it is recommended that you think carefully before you do. More often than not, it leads to unnecessary pollution of the api.
+2. Entity: Defines the properties of an entity that will be exposed via the Resource. It is highly recommended that there are no functions on these objects. If any they must be simple functions that manipulate data on the object.
+3. ResourceRepo: The persistence layer. Takes care of saving an Entity. If you want to store data to a different data store, you will want to implement this layer for the data store of your choice.
