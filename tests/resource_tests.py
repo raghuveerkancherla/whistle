@@ -23,9 +23,6 @@ class TestResource(Resource):
 
 class TestResourceConstruction(unittest.TestCase):
 
-    def test_resource_name_is_computed(self):
-        self.assertEqual(TestResource2._meta.resource_name, 'test2')
-
     def test_resource_name(self):
         self.assertEqual(TestResource._meta.resource_name, 'new_resource')
 

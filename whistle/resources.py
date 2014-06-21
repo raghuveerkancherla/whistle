@@ -50,14 +50,6 @@ class ResourceMetaClass(type):
         options = getattr(new_class, 'Meta', None)
         new_class._meta = ResourceOptions(options)
 
-        #  Not sure this is required yet!
-        if getattr(new_class._meta, 'resource_name', None) is None:
-            # resource_name is not provided. auto-name the resource.
-            class_name = new_class.__name__
-            name_bits = [bit for bit in class_name.split('Resource') if bit]
-            resource_name = ''.join(name_bits).lower()
-            new_class._meta.resource_name = resource_name
-
         return new_class
 
 
