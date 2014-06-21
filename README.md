@@ -5,7 +5,10 @@ Whistle is a new way to build web applications. It takes an api driven developme
 
 
     class BlogResource(BaseResource):
-        pass
+        
+        class Meta:
+            entity = BlogEntity
+            entity_repo = BlogEntityRepo
 
 
     blog_resource = BlogResource()
