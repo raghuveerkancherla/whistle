@@ -9,7 +9,7 @@ level. When we do that, it should be simple enough to make the resource use
 them
 """
 import six
-from request import Request
+from whistle.request import Request
 from functools import partial
 
 
