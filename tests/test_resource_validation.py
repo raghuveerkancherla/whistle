@@ -13,6 +13,9 @@ class TestResourceValidation(unittest.TestCase):
         self.get_obj.__name__ = 'get_obj'
         self.del_obj = MagicMock()
         self.del_obj.__name__ = 'del_obj'
+        self.test_func = MagicMock()
+        self.test_func.__name__ = 'test_func'
+
         self.pre_get_obj = MagicMock(return_value=None)
         self.post_get_obj = MagicMock(return_value=None)
         self.pre_del_obj = MagicMock(return_value=None)
@@ -30,7 +33,8 @@ class TestResourceValidation(unittest.TestCase):
             class Meta:
                 handlers = {
                     'single_func': [self.get_obj],
-                    'multiple_funcs': [self.get_obj, self.del_obj]
+                    'multiple_funcs': [self.get_obj, self.del_obj,
+                                       self.test_func]
                 }
                 validator = Validation
 
@@ -111,3 +115,17 @@ class TestResourceValidation(unittest.TestCase):
         self.assertEqual(self.post_get_obj.call_count, 0)
         self.assertEqual(self.pre_del_obj.call_count, 0)
         self.assertEqual(self.post_del_obj.call_count, 0)
+
+    def test_no_validations_calls_the_functions(self):
+        test_resource = self.TestResource()
+        expected_request = Request(user=None,
+                                   call='multiple_funcs',
+                                   params={'somearg1': 1,
+                                           'somearg2': 2})
+        self.get_obj.return_value = expected_request
+        self.del_obj.return_value = expected_request
+        self.post_del_obj.return_value = expected_request
+
+        test_resource.multiple_funcs(somearg1=1, somearg2=2)
+
+        self.test_func.assert_called_once_with(request=expected_request)

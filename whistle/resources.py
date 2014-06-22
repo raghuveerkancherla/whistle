@@ -67,8 +67,10 @@ class Resource(six.with_metaclass(ResourceMetaClass)):
         """
         if validation_object is not None:
             fn_name = fn.__name__
-            pre_validator = getattr(validation_object, "pre_%s" % fn_name)
-            post_validator = getattr(validation_object, "post_%s" % fn_name)
+            pre_validator = getattr(validation_object,
+                                    "pre_%s" % fn_name, None)
+            post_validator = getattr(validation_object,
+                                     "post_%s" % fn_name, None)
         else:
             pre_validator = None
             post_validator = None
