@@ -13,10 +13,10 @@ class TestResourceValidation(unittest.TestCase):
         self.get_obj.__name__ = 'get_obj'
         self.del_obj = MagicMock()
         self.del_obj.__name__ = 'del_obj'
-        self.pre_get_obj = MagicMock()
-        self.post_get_obj = MagicMock()
-        self.pre_del_obj = MagicMock()
-        self.post_del_obj = MagicMock()
+        self.pre_get_obj = MagicMock(return_value=None)
+        self.post_get_obj = MagicMock(return_value=None)
+        self.pre_del_obj = MagicMock(return_value=None)
+        self.post_del_obj = MagicMock(return_value=None)
 
         class Validation(RequestValidation):
             pre_get_obj = self.pre_get_obj
@@ -42,6 +42,7 @@ class TestResourceValidation(unittest.TestCase):
                                    call='single_func',
                                    params={'somearg1': 1,
                                            'somearg2': 2})
+        self.get_obj.return_value = expected_request
 
         test_resource.single_func(somearg1=1, somearg2=2)
 
@@ -55,6 +56,7 @@ class TestResourceValidation(unittest.TestCase):
                                    call='multiple_funcs',
                                    params={'somearg1': 1,
                                            'somearg2': 2})
+        self.get_obj.return_value = expected_request
 
         test_resource.multiple_funcs(somearg1=1, somearg2=2)
 
@@ -64,9 +66,9 @@ class TestResourceValidation(unittest.TestCase):
         self.pre_del_obj.assert_called_once_with(request=expected_request)
         self.post_del_obj.assert_called_once_with(request=expected_request)
 
-    def test_validation_is_skipped_if_handlers_returns_response(self):
+    def test_post_validation_if_handlers_returns_response(self):
         test_resource = self.TestResource()
-        self.get_obj.return_value = Response()
+        self.get_obj.return_value = expected_response = Response()
         expected_request = Request(user=None,
                                    call='multiple_funcs',
                                    params={'somearg1': 1,
@@ -76,6 +78,36 @@ class TestResourceValidation(unittest.TestCase):
 
         # not sure how to test pre got called before post
         self.pre_get_obj.assert_called_once_with(request=expected_request)
-        self.post_get_obj.assert_called_once_with(request=expected_request)
+        self.post_get_obj.assert_called_once_with(response=expected_response)
+
+    def test_validations_skipped_if_handler_returns_response(self):
+        test_resource = self.TestResource()
+        self.get_obj.return_value = expected_response = Response()
+        expected_request = Request(user=None,
+                                   call='multiple_funcs',
+                                   params={'somearg1': 1,
+                                           'somearg2': 2})
+
+        test_resource.multiple_funcs(somearg1=1, somearg2=2)
+
+        # not sure how to test pre got called before post
+        self.pre_get_obj.assert_called_once_with(request=expected_request)
+        self.post_get_obj.assert_called_once_with(response=expected_response)
+        self.assertEqual(self.pre_del_obj.call_count, 0)
+        self.assertEqual(self.post_del_obj.call_count, 0)
+
+    def test_validation_is_skipped_if_pre_validation_returns_response(self):
+        test_resource = self.TestResource()
+        self.pre_get_obj.return_value = Response()
+        expected_request = Request(user=None,
+                                   call='multiple_funcs',
+                                   params={'somearg1': 1,
+                                           'somearg2': 2})
+
+        test_resource.multiple_funcs(somearg1=1, somearg2=2)
+
+        # not sure how to test pre got called before post
+        self.pre_get_obj.assert_called_once_with(request=expected_request)
+        self.assertEqual(self.post_get_obj.call_count, 0)
         self.assertEqual(self.pre_del_obj.call_count, 0)
         self.assertEqual(self.post_del_obj.call_count, 0)

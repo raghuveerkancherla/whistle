@@ -58,6 +58,13 @@ class Resource(six.with_metaclass(ResourceMetaClass)):
             return None
 
     def validate_and_call(self, fn, validation_object, request):
+        """
+        validation_object.pre_function_name and
+        validation_object.post_function_name are called before and after the
+        actual function call. If pre/post return a response, it is immediately
+        returned. If the function call returns a response, it is passed to the
+        post_validator to modify the response if necessary.
+        """
         if validation_object is not None:
             fn_name = fn.__name__
             pre_validator = getattr(validation_object, "pre_%s" % fn_name)
@@ -68,12 +75,20 @@ class Resource(six.with_metaclass(ResourceMetaClass)):
 
         if pre_validator:
             # can raise a validation error and exit
-            pre_validator(request=request)
+            pre_validator_response = pre_validator(request=request)
+            if pre_validator_response is not None:
+                return pre_validator_response
 
         response = fn(request=request)
 
         if post_validator:
-            post_validator(request=request)
+            if isinstance(response, Response):
+                post_validator_response = post_validator(response=response)
+            else:
+                post_validator_response = post_validator(request=request)
+
+            if post_validator_response is not None:
+                return post_validator_response
 
         return response
 
