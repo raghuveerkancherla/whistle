@@ -51,16 +51,43 @@ class ResourceMetaClass(type):
 
 class Resource(six.with_metaclass(ResourceMetaClass)):
 
+    def get_validation_object(self, request):
+        if self._meta.validator:
+            return self._meta.validator(request=request)
+        else:
+            return None
+
+    def validate_and_call(self, fn, validation_object, request):
+        if validation_object is not None:
+            fn_name = fn.__name__
+            pre_validator = getattr(validation_object, "pre_%s" % fn_name)
+            post_validator = getattr(validation_object, "post_%s" % fn_name)
+        else:
+            pre_validator = None
+            post_validator = None
+
+        if pre_validator:
+            # can raise a validation error and exit
+            pre_validator(request=request)
+
+        response = fn(request=request)
+
+        if post_validator:
+            post_validator(request=request)
+
+        return response
+
     def call_handler(self, pipeline, call, user=None, **kwargs):
         """
         used when "resource_obj"."handler_name" is accessed. A partial of this
         function is returned on attribute access.
         """
         pipeline = [fn for fn in pipeline if callable(fn)]
-
         request = Request(user=user, params=kwargs, call=call)
+        validation_object = self.get_validation_object(request)
+
         for fn in pipeline:
-            response = fn(request=request)
+            response = self.validate_and_call(fn, validation_object, request)
             if isinstance(response, Response):
                 # fn has returned a response. Break and return the value
                 break

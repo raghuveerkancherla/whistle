@@ -14,7 +14,6 @@ class TestResourceHandlers(unittest.TestCase):
         class TestResource(Resource):
 
             class Meta:
-                asdf = 'asdf'
                 handlers = {
                     'single_func': [self.get_obj],
                     'multiple_funcs': [self.get_obj, self.del_obj]
