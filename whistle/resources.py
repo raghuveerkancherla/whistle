@@ -1,15 +1,11 @@
 
 """
-A resource defines an object that exposes CRUD functionality on an entity.
-CRUD operations can be at detail level as well as list level. CRUD list
-operations enable bulk operations.
-
-Currently we will not support any bulk operation optimizations at the repo
-level. When we do that, it should be simple enough to make the resource use
-them
+A resource defines an object that exposes functionality. It allows the
+definition of handler that can be called on the resource.
 """
 import six
 from whistle.request import Request
+from whistle.response import Response
 from functools import partial
 
 
@@ -18,9 +14,9 @@ class ResourceOptions(object):
     A configuration class for the resource. Provides sane defaults for options
     that can be over-ridden by the Meta class in a resource
 
-    @handlers: a map of handler_name to callable. resource.handler_name will
-    call the callable with a request object. The handler is expected to return
-    a response object
+    @handlers: a map of handler_name to a list of callables.
+    resource.handler_name will call the callable with a request object.
+    The handler is expected to return a response object
 
     @serializer (Class): object of this class should be able to serialize the
     response from the handlers
@@ -55,13 +51,20 @@ class ResourceMetaClass(type):
 
 class Resource(six.with_metaclass(ResourceMetaClass)):
 
-    def call_handler(self, fn, user=None, **kwargs):
+    def call_handler(self, pipeline, call, user=None, **kwargs):
         """
         used when "resource_obj"."handler_name" is accessed. A partial of this
         function is returned on attribute access.
         """
-        request = Request(user=user, params=kwargs)
-        response = fn(request=request)
+        pipeline = [fn for fn in pipeline if callable(fn)]
+
+        request = Request(user=user, params=kwargs, call=call)
+        for fn in pipeline:
+            response = fn(request=request)
+            if isinstance(response, Response):
+                # fn has returned a response. Break and return the value
+                break
+
         return response  # this should be serialized and returned later on
 
     def __getattr__(self, name):
@@ -71,7 +74,10 @@ class Resource(six.with_metaclass(ResourceMetaClass)):
         handler with it.
         """
         handlers = self._meta.handlers
-        if name in handlers and callable(handlers[name]):
-            return partial(self.call_handler, fn=handlers[name])
+        if name in handlers:
+            handler_pipeline = handlers[name]
+            return partial(self.call_handler,
+                           pipeline=handler_pipeline,
+                           call=name)
         else:
-            super(Resource, self).__getattr__(name)
+            return object.__getattribute__(self, name)
