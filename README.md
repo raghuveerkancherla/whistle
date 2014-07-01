@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/raghuveerkancherla/whistle.png?branch=master)](https://travis-ci.org/raghuveerkancherla/whistle) whistle
 =======
 
-Whistle is a new way to build web applications. It takes an api driven development approach. 
+Whistle takes an api driven approach to building web applications. The core part of the framework is less than 200 lines of code. WhistleCRUD is an implementation of the core Whistle framework to achieve CRUD based API's.
 
 
     class BlogResource(BaseResource):
-        
+
         class Meta:
             entity = BlogEntity
             entity_repo = BlogEntityRepo
