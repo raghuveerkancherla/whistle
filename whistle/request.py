@@ -5,10 +5,10 @@ class Request(object):
     called with a requesting user and other parameters. These details are
     wrapped in a request object to deal with these parameters
     """
-    def __init__(self, user, params, call):
+    def __init__(self, user, params, caller):
         self.user = user
         self.params = params
-        self.call = call
+        self.caller = caller
 
     def __eq__(self, val):
         return self.user == val.user and self.params == val.params
