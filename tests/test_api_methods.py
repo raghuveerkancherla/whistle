@@ -1,6 +1,6 @@
 import unittest
 from mock import MagicMock
-from whistle.api_method import ApiMethod
+from whistle.api_methods import ApiMethod
 from whistle.request import Request
 from whistle.response import Response
 
