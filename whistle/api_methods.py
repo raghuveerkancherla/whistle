@@ -24,10 +24,14 @@ class ApiMethod(six.with_metaclass(ABCMeta)):
 
         return obj
 
+    def get_pipeline(self):
+        return self.pipeline
+
     def __call__(self, user=None, *args, **kwargs):
         request = Request(user=user, params=kwargs, caller=self.name)
+        pipeline = self.get_pipeline()
 
-        for counter, handler in enumerate(self.pipeline):
+        for counter, handler in enumerate(pipeline):
             response = handler.handle_request(request=request)
             assert type(response) in [Request, Response],\
                 "handle_request of {handler_name} handler did not return a request or a response object".format(
@@ -38,7 +42,7 @@ class ApiMethod(six.with_metaclass(ABCMeta)):
         assert isinstance(response, Response),\
             "pipeline of {handler_name} did not return a response object".format(handler_name=self.name)
 
-        run_pipeline = self.pipeline[:counter + 1]
+        run_pipeline = pipeline[:counter + 1]
         for handler in reversed(run_pipeline):
             response = handler.handle_response(response=response)
             assert isinstance(response, Response),\
