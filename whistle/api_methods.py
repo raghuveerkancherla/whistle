@@ -30,20 +30,17 @@ class ApiMethod(six.with_metaclass(ABCMeta)):
         for counter, handler in enumerate(self.pipeline):
             response = handler.handle_request(request=request)
             assert type(response) in [Request, Response],\
-                "handle_request of {} handler did"\
-                " not return a request or a response object".format(
+                "handle_request of {} handler did not return a request or a response object".format(
                     handler.name)
             if isinstance(response, Response):
                 break
 
         assert isinstance(response, Response),\
-            "pipeline of {} did"\
-            " not return a response object".format(self.name)
+            "pipeline of {} did not return a response object".format(self.name)
 
         run_pipeline = self.pipeline[:counter + 1]
         for handler in reversed(run_pipeline):
             response = handler.handle_response(response=response)
             assert isinstance(response, Response),\
-                "handle_response of {} handler did"\
-                " not return a response object".format(handler.name)
+                "handle_response of {} handler did not return a response object".format(handler.name)
         return response  # this should be serialized and returned later on
