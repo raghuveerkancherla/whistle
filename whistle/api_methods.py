@@ -19,8 +19,8 @@ class ApiMethod(six.with_metaclass(ABCMeta)):
     def __new__(cls, *args, **kwargs):
         obj = super(ApiMethod, cls).__new__(cls, *args, **kwargs)
         if len(cls.pipeline) == 0:
-            raise TypeError(u"Can't instantiate {} with empty pipeline".format(
-                cls.__name__))
+            raise TypeError(u"Can't instantiate {handler_name} with empty pipeline".format(
+                handler_name=cls.__name__))
 
         return obj
 
