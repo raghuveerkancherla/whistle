@@ -4,7 +4,7 @@ from whistle.request import Request
 from whistle.response import Response
 
 
-class ApiMethod(six.with_metaclass(ABCMeta)):
+class Action(six.with_metaclass(ABCMeta)):
 
     #subclasses should set pipeline for the method to function properly.
 
@@ -17,7 +17,7 @@ class ApiMethod(six.with_metaclass(ABCMeta)):
         pass
 
     def __new__(cls, *args, **kwargs):
-        obj = super(ApiMethod, cls).__new__(cls, *args, **kwargs)
+        obj = super(Action, cls).__new__(cls, *args, **kwargs)
         if len(cls.pipeline) == 0:
             raise TypeError("Can't instantiate {handler_name} with empty pipeline".format(handler_name=cls.__name__))
 
