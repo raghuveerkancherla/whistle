@@ -36,15 +36,13 @@ class TestApiMethod(unittest.TestCase):
             name = 'asdf'
             pass
 
-        with self.assertRaises(TypeError):
-            TestEmptyPipeline()
+        self.assertRaises(TypeError, TestEmptyPipeline)
 
     def test_empty_name_not_allowed(self):
         class TestEmptyName(ApiMethod):
             pipeline = ['asdf']
 
-        with self.assertRaises(TypeError):
-            TestEmptyName()
+        self.assertRaises(TypeError, TestEmptyName)
 
     def test_api_method_calls_handler(self):
         test_api_method = self.TestApiMethod1()
@@ -119,12 +117,11 @@ class TestApiMethod(unittest.TestCase):
         self.get_obj.handle_request.return_value = expected_request
         self.del_obj.handle_request.return_value = expected_request
 
-        with self.assertRaises(AssertionError):
-            test_method(somearg1=1, somearg2=2)
+        self.assertRaises(AssertionError, test_method,
+                          somearg1=1, somearg2=2)
 
     def test_api_method_throws_for_non_standard_response(self):
         test_method = self.TestApiMethod1()
         self.get_obj.handle_request.return_value = object()
 
-        with self.assertRaises(AssertionError):
-            test_method(somearg1=1, somearg2=2)
+        self.assertRaises(AssertionError, test_method, somearg1=1, somearg2=2)
