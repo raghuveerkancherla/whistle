@@ -35,6 +35,11 @@ class ActionGroupMetaClass(type):
 
 
 class ActionGroup(six.with_metaclass(ActionGroupMetaClass)):
+    """
+    ActionGroup allows grouping of related actions in an API.
+    For example CRUD api's can group create, update, delete,
+    and read actions into one action group.
+    """
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, 'name'):
