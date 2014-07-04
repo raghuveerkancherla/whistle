@@ -23,7 +23,8 @@ class ActionGroupMetaClass(type):
         except NameError:
             pass
 
-        for action_name, action_obj in attrs.items():
+        for action_name, action_obj in attrs.copy().items():
+            # Runs only once during class consturction. Copy should not be a performance hit.
             if isinstance(action_obj, Action):
                 action_obj = attrs.pop(action_name)
                 declared_actions[action_name] = action_obj
