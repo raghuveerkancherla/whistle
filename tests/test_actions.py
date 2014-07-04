@@ -1,5 +1,6 @@
 import unittest
 from mock import MagicMock
+from whistle.handler import Handler
 from whistle.actions import Action
 from whistle.request import Request
 from whistle.response import Response
@@ -8,8 +9,9 @@ from whistle.response import Response
 class TestAction(unittest.TestCase):
 
     def setUp(self):
-        self.get_obj = MagicMock()
-        self.del_obj = MagicMock()
+        self.get_obj = MagicMock(spec=Handler)
+        self.del_obj = MagicMock(spec=Handler)
+
         self.get_obj.handle_response = MagicMock()
         self.get_obj.handle_request = MagicMock()
         self.get_obj.handle_request.return_value = Response()

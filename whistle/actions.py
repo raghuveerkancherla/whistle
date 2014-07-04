@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractproperty
 import six
+from whistle.handler import Handler
 from whistle.request import Request
 from whistle.response import Response
 
@@ -18,8 +19,12 @@ class Action(six.with_metaclass(ABCMeta)):
 
     def __new__(cls, *args, **kwargs):
         obj = super(Action, cls).__new__(cls, *args, **kwargs)
-        if len(cls.pipeline) == 0:
+        if len(obj.get_pipeline()) == 0:
             raise TypeError("Can't instantiate {handler_name} with empty pipeline".format(handler_name=cls.__name__))
+
+        for handler in obj.get_pipeline():
+            if not isinstance(handler, Handler):
+                raise TypeError("pipeline contains an object that is not an instance of Handler")
 
         return obj
 
