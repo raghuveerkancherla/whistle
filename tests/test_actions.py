@@ -1,6 +1,6 @@
 import unittest
 from mock import MagicMock
-from whistle.handler import Handler
+from whistle.handlers import Handler
 from whistle.actions import Action
 from whistle.request import Request
 from whistle.response import Response

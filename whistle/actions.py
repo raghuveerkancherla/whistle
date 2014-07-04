@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractproperty
 import six
-from whistle.handler import Handler
+from whistle.handlers import Handler
 from whistle.request import Request
 from whistle.response import Response
 
